@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>শফিকুল আইটি এন্ড ট্রেইনিং সেন্টার - ম্যানেজমেন্ট সফটওয়্যার</title>
+    <style>
+        /* General Styles */
+        :root {
+            --primary-color: #0d47a1; --secondary-color: #1976d2; --light-blue: #e3f2fd;
+            --white-color: #FFFFFF; --dark-color: #333; --gray-color: #f5f5f5;
+            --success-color: #2e7d32; --danger-color: #c62828; --warning-color: #f9a825;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Arial', sans-serif; }
+        body { background-color: var(--gray-color); color: var(--dark-color); line-height: 1.6; }
+        #login-page { display: flex; justify-content: center; align-items: center; height: 100vh; background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); }
+        .login-container { background: var(--white-color); padding: 40px; border-radius: 10px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); text-align: center; width: 90%; max-width: 400px; animation: fadeIn 0.5s; }
+        .login-container h1 { color: var(--primary-color); margin-bottom: 25px; }
+        .login-container input { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 5px; }
+        .login-container button { width: 100%; padding: 12px; background-color: var(--secondary-color); color: var(--white-color); border: none; border-radius: 5px; cursor: pointer; transition: background-color 0.3s; font-size: 16px; }
+        .login-container button:hover { background-color: var(--primary-color); }
+        #error-message { color: var(--danger-color); margin-top: 10px; display: none; }
+        #main-app { display: none; flex-direction: row; }
+        .sidebar { width: 250px; background: var(--primary-color); color: var(--white-color); min-height: 100vh; transition: width 0.3s; display: flex; flex-direction: column; }
+        .sidebar-header { padding: 20px; text-align: center; border-bottom: 1px solid var(--secondary-color); }
+        .sidebar-header h2 { margin: 0; font-size: 1.2em; }
+        .nav-menu { list-style: none; flex-grow: 1; }
+        .nav-menu li a { display: block; padding: 15px 20px; color: var(--white-color); text-decoration: none; transition: all 0.3s; border-bottom: 1px solid var(--secondary-color); position: relative; }
+        .nav-menu li a:hover, .nav-menu li a.active { background-color: var(--secondary-color); padding-left: 25px; }
+        .nav-menu li a::before { content: ''; position: absolute; left: 0; top: 0; height: 100%; width: 5px; background-color: var(--warning-color); transform: scaleY(0); transition: transform 0.3s; }
+        .nav-menu li a.active::before { transform: scaleY(1); }
+        .nav-menu li .sub-menu { display: none; list-style: none; background-color: #0b3c85; }
+        .nav-menu li:hover .sub-menu { display: block; }
+        .nav-menu li .sub-menu a { padding-left: 40px; border-bottom: none; }
+        .main-content { flex-grow: 1; padding: 25px; overflow-y: auto; max-height: 100vh; }
+        .content-section { display: none; animation: fadeIn 0.5s; }
+        .content-section.active { display: block; }
+        .page-header { margin-bottom: 20px; padding-bottom: 10px; border-bottom: 3px solid var(--primary-color); color: var(--primary-color); }
+        .dashboard-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+        .card { background: var(--white-color); padding: 20px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); text-align: center; border-left: 5px solid var(--secondary-color); transition: transform 0.2s, box-shadow 0.2s; }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12); }
+        .card h3 { margin-bottom: 10px; color: var(--primary-color); font-size: 1.1em; }
+        .card p { font-size: 2em; font-weight: bold; }
+        .form-container { background: var(--white-color); padding: 25px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 4px 8px rgba(0,0,0,0.05); }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+        .form-group { margin-bottom: 15px; }
+        .form-group.full-width { grid-column: 1 / -1; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; transition: border-color 0.3s; }
+        .form-group input:focus, .form-group select:focus { border-color: var(--primary-color); outline: none; }
+        .action-button, .submit-button { padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; color: var(--white-color); margin-right: 5px; transition: opacity 0.3s; }
+        .action-button:hover, .submit-button:hover { opacity: 0.8; }
+        .submit-button { background-color: var(--primary-color); }
+        .edit-button { background-color: var(--warning-color); }
+        .delete-button { background-color: var(--danger-color); }
+        .status-button { background-color: var(--success-color); }
+        .status-button.inactive { background-color: #6c757d; }
+        .data-table { width: 100%; border-collapse: collapse; margin-top: 20px; background: var(--white-color); box-shadow: 0 4px 8px rgba(0,0,0,0.05); }
+        .data-table th, .data-table td { padding: 12px 15px; border: 1px solid #ddd; text-align: left; word-break: break-all; }
+        .data-table th { background-color: var(--primary-color); color: var(--white-color); }
+        .data-table tr:nth-child(even) { background-color: var(--light-blue); }
+        .data-table tr:hover { background-color: #d1e7ff; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @media (max-width: 768px) {
+            #main-app { flex-direction: column; }
+            .sidebar { width: 100%; min-height: auto; }
+            .nav-menu { display: flex; flex-direction: row; overflow-x: auto; }
+            .nav-menu li { flex-shrink: 0; }
+            .nav-menu li a { border-bottom: none; border-right: 1px solid var(--secondary-color); }
+            .main-content { max-height: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="login-page">
+        <div class="login-container">
+            <h1>শফিকুল আইটি এন্ড ট্রেইনিং সেন্টার</h1>
+            <input type="text" id="username" placeholder="ইউজার আইডি" value="Shafiqul">
+            <input type="password" id="password" placeholder="পাসওয়ার্ড" value="1234">
+            <button onclick="login()">লগইন</button>
+            <p id="error-message">ভুল ইউজার আইডি অথবা পাসওয়ার্ড</p>
+        </div>
+    </div>
+    <div id="main-app">
+        <aside class="sidebar">
+            <div class="sidebar-header"><h2>মেনু</h2></div>
+            <ul class="nav-menu">
+                <li><a href="#dashboard" class="nav-link active">ড্যাসবোর্ড</a></li>
+                <li><a href="#accounts" class="nav-link">একাউন্টস</a><ul class="sub-menu"><li><a href="#ssn" class="nav-link">এস এস এন</a></li></ul></li>
+                <li><a href="#add-student" class="nav-link">শিক্ষার্থী যোগ</a></li>
+                <li><a href="#withdrawal" class="nav-link">উত্তলন</a></li>
+                <li><a href="#expense" class="nav-link">খরচ হিসাব</a></li>
+                <li><a href="#settings" class="nav-link">সেটিংস</a></li>
+                <li><a href="#" onclick="logout()">লগ আউট</a></li>
+            </ul>
+        </aside>
+        <main class="main-content">
+            <section id="dashboard" class="content-section active">
+                <h1 class="page-header">ড্যাসবোর্ড</h1>
+                <div class="dashboard-cards">
+                    <div class="card"><h3>আজকের ইনকাম</h3><p id="today-income">৳ 0</p></div>
+                    <div class="card"><h3>চলতি মাসের ইনকাম</h3><p id="month-income">৳ 0</p></div>
+                    <div class="card"><h3>মোট ইনকাম</h3><p id="total-income">৳ 0</p></div>
+                    <div class="card"><h3>বর্তমান মাসের খরচ</h3><p id="month-expense">৳ 0</p></div>
+                    <div class="card"><h3>বর্তমান মাসের উত্তলন</h3><p id="month-withdrawal">৳ 0</p></div>
+                    <div class="card"><h3>মোট উত্তলন</h3><p id="total-withdrawal">৳ 0</p></div>
+                    <div class="card"><h3>মোট শিক্ষার্থী</h3><p id="total-students">0</p></div>
+                </div>
+            </section>
+            <section id="accounts" class="content-section">
+                <h1 class="page-header">একাউন্টস ম্যানেজমেন্ট</h1>
+                <div class="form-container">
+                    <form id="account-form">
+                        <input type="hidden" id="account-id">
+                        <div class="form-grid">
+                            <div class="form-group"><label>সিরিয়াল</label><input type="text" id="account-serial" disabled></div>
+                            <div class="form-group"><label>তারিখ</label><input type="date" id="account-date"></div>
+                            <div class="form-group"><label>একাউন্ট ধরন</label><select id="account-type"><option>TOP SURVEYS</option><option>FIVE SURVEYS</option><option>PRIME OPINION</option><option>OPINION EDGE</option><option>EARN STAR</option><option>HEY CASH</option><option>OTHERS</option></select></div>
+                            <div class="form-group"><label>জিমেইল</label><input type="email" id="account-email" required></div>
+                            <div class="form-group"><label>পাসওয়ার্ড</label><input type="text" id="account-password" required></div>
+                            <div class="form-group"><label>একাউন্ট স্ট্যাটাস</label><select id="account-status" onchange="toggleActivationDate()"><option value="রানিং">রানিং</option><option value="মোবাইল নাম্বার ভেরিফিকেশন">মোবাইল নাম্বার ভেরিফিকেশন</option><option value="হোল্ড">হোল্ড</option><option value="ব্যান">ব্যান</option></select></div>
+                            <div class="form-group" id="activation-date-group" style="display: none;"><label>একাউন্ট সচল এর তারিখ</label><input type="date" id="account-activation-date"></div>
+                        </div>
+                        <button type="submit" class="submit-button">সেভ করুন</button>
+                    </form>
+                </div>
+                <table class="data-table"><thead><tr><th>সিরিয়াল</th><th>একাউন্ট ধরন</th><th>জিমেইল</th><th>পাসওয়ার্ড</th><th>স্ট্যাটাস</th><th>স্ট্যাটাস পরিবর্তন</th><th>একশন</th></tr></thead><tbody id="account-table-body"></tbody></table>
+            </section>
+            <section id="ssn" class="content-section">
+                <h1 class="page-header">এস এস এন ম্যানেজমেন্ট</h1>
+                <div class="form-container">
+                    <form id="ssn-form"><input type="hidden" id="ssn-id"><div class="form-grid"><div class="form-group"><label>সিরিয়াল</label><input type="text" id="ssn-serial" disabled></div><div class="form-group"><label>একাউন্ট ধরন</label><select id="ssn-type"><option>TOP SURVEYS</option><option>FIVE SURVEYS</option><option>PRIME OPINION</option><option>OPINION EDGE</option><option>EARN STAR</option><option>HEY CASH</option><option>OTHERS</option></select></div><div class="form-group"><label>নাম</label><input type="text" id="ssn-name" required></div><div class="form-group"><label>জন্ম তারিখ</label><input type="date" id="ssn-dob"></div><div class="form-group"><label>মোবাইল নাম্বার</label><input type="text" id="ssn-mobile"></div><div class="form-group"><label>বয়স</label><input type="number" id="ssn-age"></div><div class="form-group"><label>দেশ</label><select id="ssn-country"><option>United States</option></select></div><div class="form-group"><label>স্ট্যাড (State)</label><select id="us-states" required></select></div><div class="form-group"><label>সিটি (City)</label><input type="text" id="ssn-city" placeholder="e.g., New York City" required></div><div class="form-group"><label>কাউন্টি</label><input type="text" id="ssn-county"></div><div class="form-group"><label>জিপ কোড</label><input type="text" id="ssn-zip"></div><div class="form-group"><label>এসএসএন</label><input type="text" id="ssn-number"></div></div><button type="submit" class="submit-button">সেভ করুন</button></form>
+                </div>
+                <table class="data-table"><thead><tr><th>সিরিয়াল</th><th>নাম</th><th>ধরন</th><th>বয়স</th><th>জিপ কোড</th><th>স্ট্যাটাস</th><th>একশন</th></tr></thead><tbody id="ssn-table-body"></tbody></table>
+            </section>
+            <section id="add-student" class="content-section">
+                <h1 class="page-header">শিক্ষার্থী যোগ করুন</h1>
+                <div class="form-container">
+                    <form id="student-form"><input type="hidden" id="student-id"><div class="form-grid"><div class="form-group"><label>সিরিয়াল</label><input type="text" id="student-serial" disabled></div><div class="form-group"><label>ভর্তি তারিখ</label><input type="date" id="student-date"></div><div class="form-group"><label>শিক্ষার্থীর নাম</label><input type="text" id="student-name" required></div><div class="form-group"><label>পিতার নাম</label><input type="text" id="student-father-name"></div><div class="form-group"><label>সার্ভিস</label><select id="student-service"><option>আইপি</option><option>ভিপিএস</option><option>অন্যান্য</option></select></div><div class="form-group"><label>টাকার পরিমান</label><input type="number" id="student-amount" required></div><div class="form-group full-width"><label>ঠিকানা</label><textarea id="student-address" rows="3"></textarea></div></div><button type="submit" class="submit-button">সেভ করুন</button></form>
+                </div>
+                <table class="data-table"><thead><tr><th>সিরিয়াল</th><th>নাম</th><th>পিতার নাম</th><th>ঠিকানা</th><th>সার্ভিস</th><th>টাকা</th><th>স্ট্যাটাস</th><th>একশন</th></tr></thead><tbody id="student-table-body"></tbody></table>
+            </section>
+            <section id="withdrawal" class="content-section">
+                <h1 class="page-header">উত্তলন</h1>
+                <div class="form-container">
+                    <form id="withdrawal-form"><input type="hidden" id="withdrawal-id"><div class="form-grid"><div class="form-group"><label>সিরিয়াল</label><input type="text" id="withdrawal-serial" disabled></div><div class="form-group"><label>তারিখ</label><input type="date" id="withdrawal-date"></div><div class="form-group"><label>উত্তলন কৃত সাইট</label><select id="withdrawal-site"><option>TOP SURVEYS</option><option>FIVE SURVEYS</option><option>PRIME OPINION</option><option>OPINION EDGE</option><option>EARN STAR</option><option>HEY CASH</option><option>OTHERS</option></select></div><div class="form-group"><label>উত্তলন কৃত কার্ড</label><select id="withdrawal-card"><option>ACH Bank Card</option><option>Paypal Card</option><option>Visa Master card</option><option>Tengo Card</option></select></div><div class="form-group"><label>টাকার পরিমাণ</label><input type="number" id="withdrawal-amount" required></div></div><button type="submit" class="submit-button">সেভ করুন</button></form>
+                </div>
+                <table class="data-table"><thead><tr><th>সিরিয়াল</th><th>তারিখ</th><th>সাইট</th><th>কার্ড</th><th>টাকা</th><th>একশন</th></tr></thead><tbody id="withdrawal-table-body"></tbody></table>
+            </section>
+            <section id="expense" class="content-section">
+                <h1 class="page-header">খরচ হিসাব</h1>
+                <div class="form-container">
+                    <form id="expense-form"><input type="hidden" id="expense-id"><div class="form-grid"><div class="form-group"><label>সিরিয়াল</label><input type="text" id="expense-serial" disabled></div><div class="form-group"><label>তারিখ</label><input type="date" id="expense-date"></div><div class="form-group"><label>খরচের খাত</label><select id="expense-category"><option>আইপি ক্রয়</option><option>ভিপিএস ক্রয়</option><option>একাউন্ট ক্রয়</option><option>অন্যান্য</option></select></div><div class="form-group"><label>খরচের পরিমান</label><input type="number" id="expense-amount" required></div></div><button type="submit" class="submit-button">সেভ করুন</button></form>
+                </div>
+                <table class="data-table"><thead><tr><th>সিরিয়াল</th><th>তারিখ</th><th>খাত</th><th>পরিমান</th><th>একশন</th></tr></thead><tbody id="expense-table-body"></tbody></table>
+            </section>
+            <section id="settings" class="content-section">
+                <h1 class="page-header">সেটিংস</h1>
+                <div class="form-container"><div class="form-group"><label>স্কুল এর নাম</label><input type="text" value="শফিকুল আইটি এন্ড ট্রেইনিং সেন্টার"></div><div class="form-group"><label>স্কুল এর ঠিকানা</label><input type="text" value="ঢাকা, বাংলাদেশ"></div><div class="form-group"><label>মোবাইল</label><input type="text" value="+8801xxxxxxxxx"></div><div class="form-group"><label>ইমেইল</label><input type="email" value="contact@shafiqul-it.com"></div><button class="submit-button">সেটিংস সেভ করুন</button></div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script type="module">
+        // Import the functions you need from the SDKs
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
+        import { getDatabase, ref, onValue, set, push, update, remove, query, orderByChild } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-database.js";
+        
+        // --- FIREBASE CONFIGURATION ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyCJLiZzw5KoUd7ZQ24v4KxnMom5ZZPPklU",
+            authDomain: "shafiqul-survey-managment-app.firebaseapp.com",
+            projectId: "shafiqul-survey-managment-app",
+            storageBucket: "shafiqul-survey-managment-app.appspot.com",
+            messagingSenderId: "353026178913",
+            appId: "1:353026178913:web:c9ef6e8f5fdbd9e4978f20",
+            // *** নিশ্চিত করুন যে এই URL টি আপনার Realtime Database এর URL এর সাথে মিলে যায় ***
+            databaseURL: "https://shafiqul-survey-managment-app-default-rtdb.firebaseio.com"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        // --- AUTH & NAVIGATION ---
+        window.login = () => { if (document.getElementById('username').value === 'Shafiqul' && document.getElementById('password').value === '1234') { document.getElementById('login-page').style.display = 'none'; document.getElementById('main-app').style.display = 'flex'; } else { document.getElementById('error-message').style.display = 'block'; } };
+        window.logout = () => { if(confirm("আপনি কি লগ আউট করতে চান?")) { document.getElementById('login-page').style.display = 'flex'; document.getElementById('main-app').style.display = 'none'; } };
+
+        // --- UTILITY FUNCTIONS ---
+        const getTodayDate = () => new Date().toISOString().split('T')[0];
+        const formatCurrency = (amount) => `৳ ${Number(amount || 0).toLocaleString('en-IN')}`;
+
+        // --- Global Data Caches for Dashboard ---
+        let accountsCache = [], ssnCache = [], studentsCache = [], withdrawalsCache = [], expensesCache = [];
+
+        // --- GENERIC CRUD FACTORY for REALTIME DATABASE ---
+        function createRealtimeDBCrud(config) {
+            let localDataCache = {};
+            const form = document.getElementById(config.formId);
+            const tableBody = document.getElementById(config.tableBodyId);
+            const dbRef = ref(db, config.key);
+
+            const resetForm = () => {
+                form.reset();
+                document.getElementById(config.idField).value = '';
+                config.formDefaults();
+            };
+
+            // --- REALTIME LISTENER ---
+            onValue(dbRef, (snapshot) => {
+                tableBody.innerHTML = '';
+                localDataCache = snapshot.val() || {};
+                
+                const dataAsArray = Object.entries(localDataCache).map(([key, value]) => ({ dbKey: key, ...value }));
+                
+                if (window[config.cacheKey]) window[config.cacheKey] = dataAsArray;
+                
+                let serial = 1;
+                dataAsArray.forEach(item => {
+                    tableBody.innerHTML += config.renderRow({ ...item, serial: serial++ });
+                });
+                
+                document.getElementById(config.serialId).value = serial;
+                updateDashboard();
+            });
+
+            // --- FORM SUBMIT (CREATE/UPDATE) ---
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const dbKey = document.getElementById(config.idField).value;
+                const itemData = config.getFormData();
+                
+                try {
+                    if (dbKey) { // Update existing item
+                        const itemRef = ref(db, `${config.key}/${dbKey}`);
+                        await update(itemRef, itemData);
+                    } else { // Create new item
+                        const newItemRef = push(dbRef);
+                        itemData.createdAt = new Date().toISOString(); // Timestamp for sorting
+                        await set(newItemRef, itemData);
+                    }
+                    resetForm();
+                } catch (error) {
+                    console.error("Error writing to Realtime DB: ", error);
+                    alert("তথ্য সেভ করতে সমস্যা হয়েছে। অনুগ্রহ করে কনসোল চেক করুন।");
+                }
+            });
+
+            // --- Make functions globally accessible ---
+            window[`edit${config.name}`] = (dbKey) => {
+                const item = { dbKey, ...localDataCache[dbKey] };
+                config.populateForm(item);
+                window.scrollTo(0, 0);
+            };
+
+            window[`delete${config.name}`] = async (dbKey) => {
+                if (confirm(`আপনি কি এই আইটেমটি ডিলিট করতে চান?`)) {
+                    try {
+                        const itemRef = ref(db, `${config.key}/${dbKey}`);
+                        await remove(itemRef);
+                    } catch (error) {
+                        console.error("Error deleting from Realtime DB: ", error);
+                        alert("তথ্য ডিলিট করতে সমস্যা হয়েছে।");
+                    }
+                }
+            };
+
+            window[`toggle${config.name}Status`] = async (dbKey) => {
+                const currentStatus = localDataCache[dbKey].active;
+                try {
+                    const itemRef = ref(db, `${config.key}/${dbKey}`);
+                    await update(itemRef, { active: !currentStatus });
+                } catch (error) {
+                    console.error("Error updating status in Realtime DB: ", error);
+                    alert("স্ট্যাটাস পরিবর্তন করতে সমস্যা হয়েছে।");
+                }
+            };
+
+            return { resetForm };
+        }
+
+        // --- ACCOUNTS SECTION ---
+        const { resetForm: resetAccountForm } = createRealtimeDBCrud({
+            key: 'accounts', name: 'Account', formId: 'account-form', tableBodyId: 'account-table-body',
+            serialId: 'account-serial', idField: 'account-id', cacheKey: 'accountsCache',
+            renderRow: item => `
+                <tr>
+                    <td>${item.serial}</td><td>${item.type}</td><td>${item.email}</td><td>${item.password}</td><td>${item.status}</td>
+                    <td><button class="action-button status-button ${item.active ? '' : 'inactive'}" onclick="toggleAccountStatus('${item.dbKey}')">${item.active ? 'Active' : 'Inactive'}</button></td>
+                    <td>
+                        <button class="action-button edit-button" onclick="editAccount('${item.dbKey}')">ইডিট</button>
+                        <button class="action-button delete-button" onclick="deleteAccount('${item.dbKey}')">ডিলিট</button>
+                    </td>
+                </tr>`,
+            getFormData: () => ({
+                date: document.getElementById('account-date').value, type: document.getElementById('account-type').value,
+                email: document.getElementById('account-email').value, password: document.getElementById('account-password').value,
+                status: document.getElementById('account-status').value, activationDate: document.getElementById('account-activation-date').value, active: true
+            }),
+            populateForm: item => {
+                document.getElementById('account-id').value = item.dbKey;
+                document.getElementById('account-serial').value = item.serial;
+                document.getElementById('account-date').value = item.date; document.getElementById('account-type').value = item.type;
+                document.getElementById('account-email').value = item.email; document.getElementById('account-password').value = item.password;
+                document.getElementById('account-status').value = item.status; document.getElementById('account-activation-date').value = item.activationDate;
+                toggleActivationDate();
+            },
+            formDefaults: () => { document.getElementById('account-date').value = getTodayDate(); }
+        });
+        window.toggleActivationDate = () => { const status = document.getElementById('account-status').value; const group = document.getElementById('activation-date-group'); group.style.display = (status === 'মোবাইল নাম্বার ভেরিফিকেশন' || status === 'হোল্ড') ? 'block' : 'none'; }
+
+        // --- SSN SECTION ---
+        createRealtimeDBCrud({
+            key: 'ssns', name: 'Ssn', formId: 'ssn-form', tableBodyId: 'ssn-table-body',
+            serialId: 'ssn-serial', idField: 'ssn-id', cacheKey: 'ssnCache',
+            renderRow: item => `<tr><td>${item.serial}</td><td>${item.name}</td><td>${item.type}</td><td>${item.age||'N/A'}</td><td>${item.zip||'N/A'}</td><td><button class="action-button status-button ${item.active ? '' : 'inactive'}" onclick="toggleSsnStatus('${item.dbKey}')">${item.active ? 'Active' : 'Inactive'}</button></td><td><button class="action-button edit-button" onclick="editSsn('${item.dbKey}')">ইডিট</button><button class="action-button delete-button" onclick="deleteSsn('${item.dbKey}')">ডিলিট</button></td></tr>`,
+            getFormData: () => ({ type: document.getElementById('ssn-type').value, name: document.getElementById('ssn-name').value, dob: document.getElementById('ssn-dob').value, mobile: document.getElementById('ssn-mobile').value, age: document.getElementById('ssn-age').value, country: document.getElementById('ssn-country').value, state: document.getElementById('us-states').value, city: document.getElementById('ssn-city').value, county: document.getElementById('ssn-county').value, zip: document.getElementById('ssn-zip').value, number: document.getElementById('ssn-number').value, active: true }),
+            populateForm: item => { document.getElementById('ssn-id').value = item.dbKey; document.getElementById('ssn-serial').value = item.serial; Object.keys(item).forEach(key => { const el = document.getElementById(`ssn-${key}`) || (key === 'state' ? document.getElementById('us-states') : null); if (el) el.value = item[key]; }); },
+            formDefaults: () => {}
+        });
+
+        // --- STUDENTS SECTION ---
+        createRealtimeDBCrud({
+            key: 'students', name: 'Student', formId: 'student-form', tableBodyId: 'student-table-body',
+            serialId: 'student-serial', idField: 'student-id', cacheKey: 'studentsCache',
+            renderRow: item => `<tr><td>${item.serial}</td><td>${item.name}</td><td>${item.fatherName}</td><td>${item.address}</td><td>${item.service}</td><td>${formatCurrency(item.amount)}</td><td><button class="action-button status-button ${item.active ? '' : 'inactive'}" onclick="toggleStudentStatus('${item.dbKey}')">${item.active ? 'Active' : 'Inactive'}</button></td><td><button class="action-button edit-button" onclick="editStudent('${item.dbKey}')">ইডিট</button><button class="action-button delete-button" onclick="deleteStudent('${item.dbKey}')">ডিলিট</button></td></tr>`,
+            getFormData: () => ({ date: document.getElementById('student-date').value, name: document.getElementById('student-name').value, fatherName: document.getElementById('student-father-name').value, service: document.getElementById('student-service').value, amount: parseFloat(document.getElementById('student-amount').value), address: document.getElementById('student-address').value, active: true }),
+            populateForm: item => { document.getElementById('student-id').value = item.dbKey; document.getElementById('student-serial').value = item.serial; document.getElementById('student-date').value = item.date; document.getElementById('student-name').value = item.name; document.getElementById('student-father-name').value = item.fatherName; document.getElementById('student-service').value = item.service; document.getElementById('student-amount').value = item.amount; document.getElementById('student-address').value = item.address; },
+            formDefaults: () => { document.getElementById('student-date').value = getTodayDate(); }
+        });
+
+        // --- WITHDRAWALS SECTION ---
+        createRealtimeDBCrud({
+            key: 'withdrawals', name: 'Withdrawal', formId: 'withdrawal-form', tableBodyId: 'withdrawal-table-body',
+            serialId: 'withdrawal-serial', idField: 'withdrawal-id', cacheKey: 'withdrawalsCache',
+            renderRow: item => `<tr><td>${item.serial}</td><td>${item.date}</td><td>${item.site}</td><td>${item.card}</td><td>${formatCurrency(item.amount)}</td><td><button class="action-button edit-button" onclick="editWithdrawal('${item.dbKey}')">ইডিট</button><button class="action-button delete-button" onclick="deleteWithdrawal('${item.dbKey}')">ডিলিট</button></td></tr>`,
+            getFormData: () => ({ date: document.getElementById('withdrawal-date').value, site: document.getElementById('withdrawal-site').value, card: document.getElementById('withdrawal-card').value, amount: parseFloat(document.getElementById('withdrawal-amount').value) }),
+            populateForm: item => { document.getElementById('withdrawal-id').value = item.dbKey; document.getElementById('withdrawal-serial').value = item.serial; document.getElementById('withdrawal-date').value = item.date; document.getElementById('withdrawal-site').value = item.site; document.getElementById('withdrawal-card').value = item.card; document.getElementById('withdrawal-amount').value = item.amount; },
+            formDefaults: () => { document.getElementById('withdrawal-date').value = getTodayDate(); }
+        });
+
+        // --- EXPENSES SECTION ---
+        createRealtimeDBCrud({
+            key: 'expenses', name: 'Expense', formId: 'expense-form', tableBodyId: 'expense-table-body',
+            serialId: 'expense-serial', idField: 'expense-id', cacheKey: 'expensesCache',
+            renderRow: item => `<tr><td>${item.serial}</td><td>${item.date}</td><td>${item.category}</td><td>${formatCurrency(item.amount)}</td><td><button class="action-button edit-button" onclick="editExpense('${item.dbKey}')">ইডিট</button><button class="action-button delete-button" onclick="deleteExpense('${item.dbKey}')">ডিলিট</button></td></tr>`,
+            getFormData: () => ({ date: document.getElementById('expense-date').value, category: document.getElementById('expense-category').value, amount: parseFloat(document.getElementById('expense-amount').value) }),
+            populateForm: item => { document.getElementById('expense-id').value = item.dbKey; document.getElementById('expense-serial').value = item.serial; document.getElementById('expense-date').value = item.date; document.getElementById('expense-category').value = item.category; document.getElementById('expense-amount').value = item.amount; },
+            formDefaults: () => { document.getElementById('expense-date').value = getTodayDate(); }
+        });
+
+        // --- DASHBOARD UPDATE ---
+        const updateDashboard = () => {
+            const today = getTodayDate();
+            const currentMonth = today.substring(0, 7);
+            const sumAmount = (data, filterFn) => data.filter(filterFn).reduce((sum, item) => sum + (item.amount || 0), 0);
+            document.getElementById('today-income').innerText = formatCurrency(sumAmount(studentsCache, s => s.date === today));
+            document.getElementById('month-income').innerText = formatCurrency(sumAmount(studentsCache, s => s.date.startsWith(currentMonth)));
+            document.getElementById('total-income').innerText = formatCurrency(sumAmount(studentsCache, () => true));
+            document.getElementById('month-expense').innerText = formatCurrency(sumAmount(expensesCache, ex => ex.date.startsWith(currentMonth)));
+            document.getElementById('month-withdrawal').innerText = formatCurrency(sumAmount(withdrawalsCache, w => w.date.startsWith(currentMonth)));
+            document.getElementById('total-withdrawal').innerText = formatCurrency(sumAmount(withdrawalsCache, () => true));
+            document.getElementById('total-students').innerText = studentsCache.length;
+        };
+
+        // --- INITIALIZATION ---
+        document.addEventListener('DOMContentLoaded', function() {
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('.content-section');
+            navLinks.forEach(link => { link.addEventListener('click', function(e) { e.preventDefault(); const targetId = this.getAttribute('href').substring(1); sections.forEach(s => s.classList.remove('active')); navLinks.forEach(l => l.classList.remove('active')); document.getElementById(targetId).classList.add('active'); this.classList.add('active'); }); });
+            const states = ["Alabama","Alaska","Arizona","Arkansas","California","Colorado","Connecticut","Delaware","Florida","Georgia","Hawaii","Idaho","Illinois","Indiana","Iowa","Kansas","Kentucky","Louisiana","Maine","Maryland","Massachusetts","Michigan","Minnesota","Mississippi","Missouri","Montana","Nebraska","Nevada","New Hampshire","New Jersey","New Mexico","New York","North Carolina","North Dakota","Ohio","Oklahoma","Oregon","Pennsylvania","Rhode Island","South Carolina","South Dakota","Tennessee","Texas","Utah","Vermont","Virginia","Washington","West Virginia","Wisconsin","Wyoming"];
+            const stateDropdown = document.getElementById('us-states');
+            states.forEach(state => stateDropdown.innerHTML += `<option value="${state}">${state}</option>`);
+        });
+    </script>
+</body>
+</html>
